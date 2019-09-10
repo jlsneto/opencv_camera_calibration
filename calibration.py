@@ -8,7 +8,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 cbrow = 7
-cbcol = 6
+cbcol = 7
 
 
 def re_projection_error(dist, imgpoints, mtx, objpoints, rvecs, tvecs) -> float:
@@ -22,14 +22,14 @@ def re_projection_error(dist, imgpoints, mtx, objpoints, rvecs, tvecs) -> float:
 
 def main():
     # termination criteria
-    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 39, 0.001)
+    criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 102, 0.001)
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
     objp = np.zeros((cbrow * cbcol, 3), np.float32)
     objp[:, :2] = np.mgrid[0:cbcol, 0:cbrow].T.reshape(-1, 2)
     # Arrays to store object points and image points from all the images.
     objpoints = []  # 3d point in real world space
     imgpoints = []  # 2d points in image plane.
-    images_dir = os.path.join(BASE_DIR, 'example_images')
+    images_dir = os.path.join(BASE_DIR, 'example_images1')
     images = [glob.glob(os.path.join(images_dir, path)) for path in os.listdir(images_dir)]
 
     for fname in images:
@@ -45,12 +45,11 @@ def main():
             # Draw and display the corners
             cv.drawChessboardCorners(img, (cbcol, cbrow), corners2, ret)
             cv.imshow('img', img)
-            cv.waitKey(500)
+            cv.waitKey(200)
     cv.destroyAllWindows()
-
     ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
-    img = cv.imread(os.path.join(images_dir, 'left12.jpg'))
+    img = cv.imread(os.path.join(images_dir, 'intrinsic_cam01_000000000011_rendered.png'))
     h, w = img.shape[:2]
     newcameramtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
     # undistort
